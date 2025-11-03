@@ -1,44 +1,4 @@
-name: ln-pms                  # 整个编排的名字（可选），方便在 docker 命令/日志中识别
+name: ln-pms
 
-services:                     # 定义要运行的容器服务列表
-  postgres:                   # 服务名：postgres（docker 内部网络中的主机名也是它）
-    image: postgres:17        # 使用官方 PostgreSQL 17 镜像
-    container_name: ln_pms_pg # 容器的可读名称（不写则自动生成）
-    env_file:
-      - ./.env                # 从 .env 文件加载环境变量（用户名、密码、库名、端口等）部署时创建
-    ports:
-      - "${PG_PORT:-5432}:5432"  # 把容器 5432 暴露到宿主 PG_PORT（默认 5432）
-    volumes:
-      - pg_data:/var/lib/postgresql/data   # 挂载命名卷，持久化 PG 数据目录
-      - ./init:/docker-entrypoint-initdb.d # 首次初始化时运行此目录下 *.sql/ *.sh
-    healthcheck:                           # 健康检查，确保数据库可连接
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lnpms} -d ${POSTGRES_DB:-lnpms_db}"]
-      interval: 5s                         # 健康检查间隔
-      timeout: 3s                          # 每次检查超时时间
-      retries: 20                          # 连续失败多少次视为不健康
-    restart: unless-stopped                # 退出后自动重启（除非手动停止）
-
-  flyway:                      # 服务名：flyway（独立迁移工具容器）
-    image: flyway/flyway:10    # 使用官方 Flyway 10 镜像
-    container_name: ln_pms_flyway
-    depends_on:
-      postgres:
-        condition: service_healthy        # 只有当 postgres 健康才会尝试启动/运行
-    volumes:
-      - ../db/migrations:/flyway/sql:ro   # 把你仓库的迁移脚本挂进容器只读目录
-    command:                              # 默认命令（这里设为 info，实际迁移用脚本覆盖）
-      ["-url=jdbc:postgresql://postgres:5432/${POSTGRES_DB}",
-       "-user=${POSTGRES_USER}",
-       "-password=${POSTGRES_PASSWORD}",
-       "-connectRetries=60",
-       "info"]
-    # 说明：我们通常不会 `up -d flyway` 常驻；而是用脚本 `docker compose run --rm flyway migrate`
-    # 来“一次性”执行迁移命令。
-
-volumes:
-  pg_data:                   # 声明一个命名卷，用来持久化 PG 的 /var/lib/postgresql/data
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /srv/ln-pms/postgres
+include:
+  - ./db/db.yaml

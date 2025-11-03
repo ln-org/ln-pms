@@ -1,0 +1,21 @@
+# 本地开发用编排，包含 postgres、flyway、pgadmin
+services:
+  postgres:
+    env_file:
+      - ./.env.dev
+    volumes:
+      - /var/lib/postgresql/data   # 匿名卷，方便随时重置
+
+  flyway:
+    env_file:
+      - ./.env.dev
+
+  pgadmin:
+    image: dpage/pgadmin4:9
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@lnpms.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"                 # 本地浏览器访问 http://localhost:5050
+    depends_on:
+      - postgres

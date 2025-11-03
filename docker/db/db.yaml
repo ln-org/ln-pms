@@ -1,0 +1,47 @@
+# 用于部署/CI 的基础数据库栈
+name: ln-pms                  # 项目名称，便于 docker compose ps / logs 识别
+
+# 统一定义 Postgres + Flyway 服务
+services:
+  postgres:
+    image: postgres:17                    # 固定 PG 版本，方便升级管理
+    container_name: ln_pms_pg
+    env_file:
+      - ./.env                            # 部署环境的凭据 .env 需要自行准备
+    ports:
+      - "${PG_PORT:-5432}:5432"            # 默认暴露 5432；可通过 .env 覆盖
+    volumes:
+      - pg_data:/var/lib/postgresql/data  # 命名卷持久化数据
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lnpms} -d ${POSTGRES_DB:-lnpms_db}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  flyway:
+    image: flyway/flyway:11   # 使用 Flyway 11 执行 schema 迁移
+    container_name: ln_pms_flyway
+    env_file:
+      - ./.env                # 与 Postgres 共用凭据
+    environment:              # Flyway CLI 需要的连接配置及自定义占位符
+      FLYWAY_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+      FLYWAY_USER: "${POSTGRES_USER}"
+      FLYWAY_PASSWORD: "${POSTGRES_PASSWORD}"
+      FLYWAY_CONNECT_RETRIES: "${FLYWAY_CONNECT_RETRIES:-60}"
+      FLYWAY_PLACEHOLDERS_APP_DB_USER: "${APP_DB_USER}"
+      FLYWAY_PLACEHOLDERS_APP_DB_PASSWORD: "${APP_DB_PASSWORD}"
+    depends_on:
+      postgres:
+        condition: service_healthy        # 迁移前确保数据库 ready
+    volumes:
+      - ../../db/migrations:/flyway/sql:ro   # 仅读方式挂载 SQL 迁移文件夹
+    # 不常驻运行；使用 `docker compose run --rm flyway migrate` 执行一次性迁移
+
+volumes:
+  pg_data:                    # 命名卷映射到宿主机固定目录，必须通过 PG_DATA_PATH 配置
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PG_DATA_PATH}

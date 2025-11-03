@@ -12,8 +12,8 @@ LN-PMS
 ln-pms/
 ├─ api/         # 后端(Java 21 + Spring Boot 3.? + JPA）
 ├─ web/         # 前端()
-├─ db/          # 数据库构建与迁移(Postgre17.6 + Flyway)
-├─ docker/      # 仅容器化 PostgreSQL + Flyway
+├─ db/          # 数据库构建与迁移脚本(Flyway SQL)
+├─ docker/      # Compose 与脚本入口，聚合 DB 栈
 ├─ storage/     # 非结构化数据存储(还没决定用什么)
 └─ docs/        # 设计文档与架构说明
 ```
@@ -33,7 +33,44 @@ LN-PMS 的结构与 GitHub 类似：
 
 ## 部署模式概述
 
-* **数据库**：仅 DB 容器 + 用 Flyway 临时容器做独立迁移
-* **后端 / 前端**：本机运行开发，生产可独立部署
+* **数据库**：Postgres 17 + Flyway；使用 `docker/dev.sh` / `docker/deploy.sh` 管理
+* **后端 / 前端**：本机运行开发，生产环境独立部署（待完善）
 * **非结构化数据**：待定
 
+### Docker 入口
+
+```bash
+# 启动开发环境
+bash ./docker/dev.sh up
+bash ./docker/dev.sh down --volumes
+
+# 部署 / CI 环境
+bash ./docker/deploy.sh up  # 读取 docker/db/.env 并校验 PG_DATA_PATH
+bash ./docker/deploy.sh down
+```
+
+更多细节见 `docker/README.md` 与 `docker/db/README.md`。
+
+### Docker Compose 手动操作
+
+若不使用脚本，可直接在 `docker/` 目录下执行 Compose 命令：
+
+```bash
+cd docker
+
+# 部署/CI
+# 启动
+docker compose -f docker-compose.yaml up -d postgres
+docker compose -f docker-compose.yaml run --rm flyway migrate
+#停止
+docker compose -f docker-compose.yaml down
+
+# 开发环境
+# 启动
+docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d postgres pgadmin
+docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm flyway migrate
+# 停止
+docker compose -f docker-compose.yaml -f docker-compose.dev.yaml down -v
+```
+
+> 注意：执行前先在 `db/.env` 中设置 `PG_DATA_PATH`,并确保路径存在 (使用脚本会自动创建)。
