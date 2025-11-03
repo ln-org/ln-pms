@@ -40,13 +40,13 @@ LN-PMS 的结构与 GitHub 类似：
 ### Docker 入口
 
 ```bash
-# 启动开发环境
-bash ./docker/dev.sh up
-bash ./docker/dev.sh down --volumes
+# 开发环境
+bash ./docker/dev.sh up             # 启动
+bash ./docker/dev.sh down --volumes # 停止
 
 # 部署 / CI 环境
-bash ./docker/deploy.sh up  # 读取 docker/db/.env 并校验 PG_DATA_PATH
-bash ./docker/deploy.sh down
+bash ./docker/deploy.sh up      # 启动 读取 docker/db/.env 并校验 PG_DATA_PATH
+bash ./docker/deploy.sh down    # 停止
 ```
 
 更多细节见 `docker/README.md` 与 `docker/db/README.md`。
@@ -58,19 +58,19 @@ bash ./docker/deploy.sh down
 ```bash
 cd docker
 
-# 部署/CI
-# 启动
-docker compose -f docker-compose.yaml up -d postgres
-docker compose -f docker-compose.yaml run --rm flyway migrate
-#停止
-docker compose -f docker-compose.yaml down
-
 # 开发环境
 # 启动
 docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d postgres pgadmin
 docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm flyway migrate
 # 停止
 docker compose -f docker-compose.yaml -f docker-compose.dev.yaml down -v
+
+# 部署/CI
+# 启动
+docker compose -f docker-compose.yaml up -d postgres
+docker compose -f docker-compose.yaml run --rm flyway migrate
+#停止
+docker compose -f docker-compose.yaml down
 ```
 
 > 注意：执行前先在 `db/.env` 中设置 `PG_DATA_PATH`,并确保路径存在 (使用脚本会自动创建)。
