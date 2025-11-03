@@ -31,7 +31,7 @@ LN-PMS 的结构与 GitHub 类似：
 
 ---
 
-## 部署模式概述
+## 快速开始
 
 * **数据库**：Postgres 17 + Flyway；使用 `docker/dev.sh` / `docker/deploy.sh` 管理
 * **后端 / 前端**：本机运行开发，生产环境独立部署（待完善）
@@ -40,7 +40,7 @@ LN-PMS 的结构与 GitHub 类似：
 ### Docker 入口
 
 ```bash
-# 开发环境
+# 启动开发环境
 bash ./docker/dev.sh up             # 启动
 bash ./docker/dev.sh down --volumes # 停止
 
@@ -48,6 +48,7 @@ bash ./docker/dev.sh down --volumes # 停止
 bash ./docker/deploy.sh up      # 启动 读取 docker/db/.env 并校验 PG_DATA_PATH
 bash ./docker/deploy.sh down    # 停止
 ```
+数据库连接配置 `docker/db/.env.dev` / `docker/db/.env` (开发/部署)
 
 更多细节见 `docker/README.md` 与 `docker/db/README.md`。
 
