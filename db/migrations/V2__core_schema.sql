@@ -73,18 +73,70 @@ BEGIN
 END
 $$;
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON n.oid = t.typnamespace
+        WHERE t.typname = 'auth_provider' AND n.nspname = 'core'
+    ) THEN
+        EXECUTE 'CREATE TYPE core.auth_provider AS ENUM (''wecom'', ''dingtalk'', ''feishu'')';
+    END IF;
+END
+$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type t
+        JOIN pg_namespace n ON n.oid = t.typnamespace
+        WHERE t.typname = 'identity_status' AND n.nspname = 'core'
+    ) THEN
+        EXECUTE 'CREATE TYPE core.identity_status AS ENUM (''active'', ''disabled'', ''pending'')';
+    END IF;
+END
+$$;
+
 -- Users
 CREATE TABLE IF NOT EXISTS core.users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
     display_name TEXT NOT NULL,
+    avatar_url TEXT,
+    email TEXT,
+    mobile TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    deactivated_at TIMESTAMPTZ,
+    synced_at TIMESTAMPTZ,
+    sync_source TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE core.users IS 'Platform accounts for LN-PMS.';
+COMMENT ON TABLE core.users IS 'Directory-synced user profiles for LN-PMS.';
+COMMENT ON COLUMN core.users.sync_source IS 'Last synchronization provider, e.g. wecom:corpId.';
+
+-- User identities (external providers)
+CREATE TABLE IF NOT EXISTS core.user_identities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES core.users(id) ON DELETE CASCADE,
+    provider core.auth_provider NOT NULL,
+    tenant_key TEXT NOT NULL,
+    external_user_id TEXT NOT NULL,
+    status core.identity_status NOT NULL DEFAULT 'active',
+    access_token TEXT,
+    refresh_token TEXT,
+    token_expires_at TIMESTAMPTZ,
+    profile JSONB NOT NULL DEFAULT '{}'::jsonb,
+    credentials JSONB NOT NULL DEFAULT '{}'::jsonb,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    synced_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (provider, tenant_key, external_user_id),
+    UNIQUE (provider, tenant_key, user_id)
+);
+
+COMMENT ON TABLE core.user_identities IS 'External identity bindings used for login and synchronization.';
 
 -- Projects
 CREATE TABLE IF NOT EXISTS core.projects (
