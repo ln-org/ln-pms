@@ -50,6 +50,16 @@ bash ./docker/deploy.sh down    # 停止
 ```
 数据库连接配置 `docker/db/.env.dev` / `docker/db/.env` (开发/部署)
 
+```bash
+# .env 开发环境数据库配置
+用户名: lnpms_app
+密码: lnpms_app
+主机地址: localhost
+端口号: 5432
+连接的数据库名称: lnpms_db
+表在 schema core. 中
+```
+
 更多细节见 `docker/README.md` 与 `docker/db/README.md`。
 
 ### Docker Compose 手动操作
