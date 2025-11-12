@@ -1,0 +1,26 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /lnpms
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lnpms_db}
+    username: ${DB_USERNAME:lnpms_app}
+    password: ${DB_PASSWORD:lnpms_app}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  config: classpath:logback-spring.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

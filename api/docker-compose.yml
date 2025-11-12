@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    network_mode: "host"  # 使用主机网络模式
+    environment:
+      DB_URL: jdbc:postgresql://localhost:5432/lnpms_db
+      DB_USERNAME: lnpms_app
+      DB_PASSWORD: lnpms_app
+      LOG_PATH: /var/log/ln-pms
+    volumes:
+      - logs:/var/log/ln-pms
+
+volumes:
+  logs:
+
