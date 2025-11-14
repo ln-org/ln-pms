@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 COMPOSE_FILES=(-f "$SCRIPT_DIR/docker-compose.yaml" -f "$SCRIPT_DIR/docker-compose.dev.yaml")
+DEFAULT_SERVICES=(postgres pgadmin app)
 
 usage() {
   cat <<'USAGE'
@@ -50,9 +51,9 @@ case "$command" in
     done
 
     if [[ ${#compose_args[@]} -gt 0 ]]; then
-      docker compose "${COMPOSE_FILES[@]}" up -d "${compose_args[@]}" postgres pgadmin
+      docker compose "${COMPOSE_FILES[@]}" up -d "${compose_args[@]}" "${DEFAULT_SERVICES[@]}"
     else
-      docker compose "${COMPOSE_FILES[@]}" up -d postgres pgadmin
+      docker compose "${COMPOSE_FILES[@]}" up -d "${DEFAULT_SERVICES[@]}"
     fi
 
     if [[ $SKIP_MIGRATE -eq 0 ]]; then

@@ -2,3 +2,5 @@ name: ln-pms
 
 include:
   - ./db/db.yaml
+  - ../api/docker-compose.yml
+

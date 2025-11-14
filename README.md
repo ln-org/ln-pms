@@ -39,9 +39,11 @@ LN-PMS 的结构与 GitHub 类似：
 
 ### Docker 入口
 
+请先安装最新版本 docker: `https://docs.docker.com/engine/install/ubuntu/`
+
 ```bash
 # 启动开发环境
-bash ./docker/dev.sh up             # 启动
+bash ./docker/dev.sh up             # 启动 Postgres + pgAdmin + app(api服务)
 bash ./docker/dev.sh down --volumes # 停止
 
 # 部署 / CI 环境

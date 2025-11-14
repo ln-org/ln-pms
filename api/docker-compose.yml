@@ -1,7 +1,12 @@
-version: '3.8'
+# version: '3.8' # yzh 注释掉，使用默认版本
 services:
   app:
     build: .
+    # yzh add
+    depends_on:
+      postgres:
+        condition: service_healthy        # 确保数据库 ready
+        
     network_mode: "host"  # 使用主机网络模式
     environment:
       DB_URL: jdbc:postgresql://localhost:5432/lnpms_db

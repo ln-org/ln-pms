@@ -19,10 +19,11 @@ docker
 
 ## 使用方式
 
+请先安装最新版本 docker: `https://docs.docker.com/engine/install/ubuntu/`
 ### 本地开发
 
 ```bash
-bash ./dev.sh up             # 启动 Postgres + pgAdmin
+bash ./dev.sh up             # 启动 Postgres + pgAdmin + app(api服务)
 bash ./dev.sh down --volumes # 停止并清空匿名卷
 ```
 
@@ -34,7 +35,7 @@ bash ./dev.sh down --volumes # 停止并清空匿名卷
 2. 运行：
 
 ```bash
-bash ./deploy.sh up                # 启动 Postgres 并运行 Flyway 迁移
+bash ./deploy.sh up                # 启动
 bash ./deploy.sh up --no-migrate   # 不进行 FLyway 迁移
 bash ./deploy.sh down              # 停止服务（不会删除宿主目录）
 ```

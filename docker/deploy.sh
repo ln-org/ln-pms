@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yaml"
+DEFAULT_SERVICES=(postgres app)
 
 usage() {
   cat <<'USAGE'
@@ -54,9 +55,9 @@ case "$command" in
     source "$SCRIPT_DIR/db/deploy_aux.sh"
 
     if [[ ${#compose_args[@]} -gt 0 ]]; then
-      docker compose -f "$COMPOSE_FILE" up -d "${compose_args[@]}" postgres
+      docker compose -f "$COMPOSE_FILE" up -d "${compose_args[@]}" "${DEFAULT_SERVICES[@]}"
     else
-      docker compose -f "$COMPOSE_FILE" up -d postgres
+      docker compose -f "$COMPOSE_FILE" up -d "${DEFAULT_SERVICES[@]}"
     fi
 
     if [[ $SKIP_MIGRATE -eq 0 ]]; then
