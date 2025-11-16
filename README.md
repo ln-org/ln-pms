@@ -11,7 +11,7 @@ LN-PMS
 ``` bash
 ln-pms/
 ├─ api/         # 后端(Java 21 + Spring Boot 3.? + JPA）
-├─ web/         # 前端()
+├─ web/         # 前端(Vue 3.x + TypeScript + shadcn-vue + Vite + UnoCss)
 ├─ db/          # 数据库构建与迁移脚本(Flyway SQL)
 ├─ docker/      # Compose 与脚本入口，聚合 DB 栈
 ├─ storage/     # 非结构化数据存储(还没决定用什么)
