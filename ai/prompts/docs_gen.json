@@ -1,0 +1,23 @@
+{
+  "weekly_report": {
+    "description": "生成项目周报，包含进展、风险、下周计划",
+    "prompt": "你是一个测绘项目经理，请根据以下项目数据生成一份结构化周报：\n{{project_data}}\n要求：1. 用 Markdown 生成章节，2. 每段开始说明时间范围，3. 列出风险和下一步行动。",
+    "model": "qwen2.5:7b",
+    "format": "markdown"
+  },
+  "stage_summary": {
+    "description": "输出阶段进度与延期风险",
+    "prompt": "|阶段|计划|实际|风险|\n|---|---|---|---|\n{{stage_table}}\n请再附一段总结，说明是否需要关注延期。",
+    "model": "qwen2.5:7b"
+  },
+  "deliverable_note": {
+    "description": "为成果生成标准化说明文档",
+    "prompt": "成果信息：{{deliverable_data}}\n请写一段说明，包含成果性质、存储路径、交付状态、下一步交付动作。",
+    "model": "deepseek-chat"
+  },
+  "issue_digest": {
+    "description": "将项目问题汇总为问题分类 + 建议",
+    "prompt": "问题列表：{{issues}}\n请输出：1) 主问题摘要 2) 风险提示 3) 解决建议。",
+    "model": "qwen2.5:1.8b"
+  }
+}

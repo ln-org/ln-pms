@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "description": "将多条评论压缩成要点+待办",
+    "prompt": "总结以下评论的核心观点、决策与待办，并按 Markdown 列出：\n{{comments}}",
+    "model": "deepseek-chat"
+  },
+  "reply_suggestions": {
+    "description": "生成不同语气的回复建议",
+    "prompt": "根据上下文 {{comments}}，提供三条回复建议，分别强调行动、关怀、催促。",
+    "model": "qwen2.5:1.8b"
+  },
+  "emotion": {
+    "description": "检测情绪和紧急度",
+    "prompt": "判断以下文本的情绪（沉稳/焦虑/紧张）及是否紧急：\n{{text}}",
+    "model": "llama3.1:8b"
+  },
+  "follow_up": {
+    "description": "生成智能提醒（@、承诺、截止）",
+    "prompt": "评论内容：{{comments}}\n请提取需要跟进的动作、责任人、截止时间。",
+    "model": "qwen2.5:7b"
+  }
+}
