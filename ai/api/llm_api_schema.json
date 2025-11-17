@@ -1,0 +1,27 @@
+{
+  "description": "后端可解析的统一 LLM API 配置",
+  "client": {
+    "endpoint": "${AI_LLM_BASE_URL}",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer ${AI_LLM_API_KEY}"
+    },
+    "body_template": {
+      "model": "{{model}}",
+      "messages": [
+        {
+          "role": "user",
+          "content": "{{prompt}}"
+        }
+      ],
+      "temperature": "{{temperature}}",
+      "max_tokens": "{{max_tokens}}"
+    }
+  },
+  "prompts_key": "prompts/*.json",
+  "defaults": {
+    "temperature": 0.2,
+    "max_tokens": 1024
+  }
+}

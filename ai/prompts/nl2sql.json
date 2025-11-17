@@ -1,0 +1,13 @@
+{
+  "single_query": {
+    "description": "自然语言 -> 单条 SELECT",
+    "prompt": "数据库架构：{{schema}}\n用户请求：{{query}}\n请只输出 SELECT 语句，禁止 UPDATE/DELETE。",
+    "model": "llama3.1:8b",
+    "format": "sql"
+  },
+  "aggregate_query": {
+    "description": "自然语言 -> 聚合统计语句",
+    "prompt": "数据库架构：{{schema}}\n需求：{{query}}\n请输出聚合 SQL，并简要解释结果。",
+    "model": "qwen2.5:7b"
+  }
+}
